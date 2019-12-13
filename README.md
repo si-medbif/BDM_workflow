@@ -1,10 +1,10 @@
 # BDM_workflow
 A collection of workflows 
 
-# RNA-Seq
+## RNA-Seq
 
-# WES
+## WES
 
-# WGS
+## WGS
 
-# Neoantigens
+## Neoantigens
