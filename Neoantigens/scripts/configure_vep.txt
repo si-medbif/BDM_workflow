@@ -15,8 +15,10 @@ $ ./INSTALL.pl
 Do you want to install any plugins (y/n)? y
 # Enter number from list or 0 for all
 ? 0
-
+# You can install FASTA reference file at this point, or skip it and provide it at runtime.
 $ cd /opt/vep/.vep/Plugins/
 # Download the contents of this file:
 # https://github.com/griffithlab/pVACtools/blob/master/tools/pvacseq/VEP_plugins/Wildtype.pm
-$ cd ~/src/ensemble-vep
+# Exit the docker container and save it as a new image.
+$ exit
+$ docker commit <container-ID> vep:v1
