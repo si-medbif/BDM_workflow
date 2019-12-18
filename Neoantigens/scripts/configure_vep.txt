@@ -1,16 +1,16 @@
 # VEP setup instructions
-# Creating the VEP docker image:
-$ docker build -t "vep:v1" .
+# Download VEP docker image
+$ docker pull ensemblorg/ensembl-vep:latest
 # Installing the reference cacheand plugins:
-$ docker run -it -v /:/data vep:v1
+$ docker run -it -v /:/data ensemblorg/ensembl-vep:latest
 $ ./INSTALL.pl
 > Do you want to continue installing the API (y/n)? n
 > Cache files will be stored in /opt/vep/.vep
 > Do you want to install any cache files (y/n)? y
 > Cache directory /opt/vep/.vep does not exists - do you want to create it (y/n)? y
 # Look through the list to find this cache:
-> 259 : homo_sapiens_vep_95_GRCh38.tar.gz
-? 259
+> 320 : homo_sapiens_vep_98_GRCh38.tar.gz
+? 320
 # The cache is downloading, this will take time.
 Do you want to install any plugins (y/n)? y
 # Enter number from list or 0 for all
