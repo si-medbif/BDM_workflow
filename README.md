@@ -1,10 +1,10 @@
 # BDM_workflow
 A collection of workflows 
 
-## RNA-Seq
+## [RNA](https://github.com/si-medbif/BDM_workflow/tree/master/RNA)
 
 ## WES
 
 ## WGS
 
-## Neoantigens
+## [Neoantigens](https://github.com/si-medbif/BDM_workflow/tree/master/Neoantigens)
