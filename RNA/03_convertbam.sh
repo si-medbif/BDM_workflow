@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-OUT=/gnome/chanitra_neoantigens/RNA2
+OUT=/gnome/tmp
 
 # Add read group and sort SAM file
 docker run --rm -v ${OUT}:/out \

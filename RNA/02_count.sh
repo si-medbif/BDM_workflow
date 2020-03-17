@@ -5,10 +5,13 @@
 # (Potential) Perform read counting at feature level (-f) (e.g. exons)
 # Minimum mapping quality (-Q <int>)
 # Assign reads to all overlapping features (-O)
+# Other useful options:
+# -J  Count number of reads supporting each exon-exon junction. Results are saved to a file named '<output_file>.jcounts' 
+
 FEATURECOUNTS=/home/harald/subread-1.6.3-Linux-x86_64/bin
-BAMFOLDER=/gnome/chanitra_neoantigens/RNA2
+BAMFOLDER=/gnome/tmp
 GTF=/gnome/genome_database/ensembl/Homo_sapiens.GRCh38.98.convert.gtf
-OUTFOLDER=/gnome/chanitra_neoantigens/RNA2
+OUTFOLDER=/gnome/tmp
 
 ${FEATURECOUNTS}/featureCounts \
         -p \

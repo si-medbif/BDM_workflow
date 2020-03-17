@@ -1,12 +1,12 @@
 #!/bin/bash
 
 STARFOLDER=/home/harald/star
-BAMFOLDER=/gnome/chanitra_neoantigens/RNA2
-FASTQFOLDER=/gnome/chanitra_neoantigens/fastq
+BAMFOLDER=/gnome/tmp
+FASTQFOLDER=/gnome/tmp
 HG38FOLDER=/gnome/WTS/GRCh38_v98
 
 ${STARFOLDER}/STAR \
-	--runThreadN 20 \
+	--runThreadN 4 \
 	--genomeDir ${HG38FOLDER}/ \
         --readFilesIn ${FASTQFOLDER}/$1_1.fastq.gz ${FASTQFOLDER}/$1_2.fastq.gz \
         --readFilesCommand zcat \

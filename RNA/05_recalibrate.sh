@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUT=/gnome/chanitra_neoantigens/RNA2
+OUT=/gnome/tmp
 REFERENCE=/gnome/genome_database/ensembl
 DATABASE=/gnome/genome_database/gatk_bundle/hg38bundle
 

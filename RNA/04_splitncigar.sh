@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUT=/gnome/chanitra_neoantigens/RNA2
+OUT=/gnome/tmp
 REFERENCE=/gnome/genome_database/ensembl
 
 #Split and trim reads and reassign mapping qualities 
