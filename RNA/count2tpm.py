@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
+"""
+    Collects output from single sample featureCounts analysis.
+    Input:  Folder name where featureCounts output is stored
+            Output files should be named as <SAMPLE>_readcounts.featurecounts.txt
+    Output: One file with TPM values for each sample
+"""
+
 import sys
 import glob
 
 infolder = sys.argv[1]
 
-outfile = 'output.txt'
+outfile = infolder+'/all-samples_tpm.txt'
 try:
     column = int(sys.argv[2])
 except IndexError:

@@ -17,7 +17,7 @@ ${FEATURECOUNTS}/featureCounts \
         -p \
         -B \
         -t exon \
-        -g transcript_id \
+        -g gene_id \
         -T 1 \
 	-Q 30 \
 	-O \

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 REFERENCE=/gnome/genome_database/ensembl
-OUTPUT=/gnome/chanitra_neoantigens/RNA2
-FASTQ=/gnome/chanitra_neoantigens/fastq
+OUTPUT=/gnome/tmp
+FASTQ=/gnome/tmp
 
 docker run --rm -v ${REFERENCE}:/ref \
 	-v ${OUTPUT}:/out \
