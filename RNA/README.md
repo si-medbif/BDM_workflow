@@ -1,4 +1,4 @@
-##STAR
+## STAR
 
 Alignment of pair-end reads are done by STAR (v2.6.1d).
 
@@ -8,7 +8,7 @@ Reference used is Ensembl (v98):
 
 Alignment is performed by doing a two pass run, using the junctions detected from the first pass to improve alignment in the second pass.
 
-##FeatureCounts
+## FeatureCounts
 
 Quantification of fragments are done by featureCounts (subread v1.6.3)
 
