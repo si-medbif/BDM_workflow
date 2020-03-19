@@ -5,49 +5,40 @@
     Input:  Folder name where featureCounts output is stored
             Output files should be named as <SAMPLE>_readcounts.featurecounts.txt
     Output: One file with TPM values for each sample
+            One file with raw counts for each sample
 """
 
 import sys
 import glob
+import pandas as pd
 
 infolder = sys.argv[1]
 
-outfile = infolder+'/all-samples_tpm.txt'
-try:
-    column = int(sys.argv[2])
-except IndexError:
-    column = 6
+outfile1 = infolder+'/all-samples_tpm.txt'
+outfile2 = infolder+'/all-samples_raw.txt'
 
 files = glob.glob(infolder+'/*readcounts.featurecounts.txt')
-sum_rpk = {}
-counts = []
-genes = []
-for index, infile in enumerate(files):
-    if infile not in sum_rpk:
-        sum_rpk[infile] = 0
-        counts.append([])
-    with open(infile, 'r') as fin:
-        for line in fin:
-            if line.startswith('#'):
-                next(fin)
-                continue
-            l = line.strip().split()
-            rpk = 1000*int(l[column])/int(l[5])
-            name = l[0]
-            sum_rpk[infile] += rpk
-            counts[index].append(rpk)
-            if index == 0:
-                genes.append(name)
-with open(outfile, 'w') as fout:
-    fout.write('gene_name')
-    for name in files:
-        t = name.split('/')[-1].split('_')[0]
-        fout.write('\t{}'.format(t))
-    fout.write('\n')
-    for index, name in enumerate(genes):
-        fout.write(name)
-        for fi_index, infile in enumerate(files):
-            rpk = counts[fi_index][index]
-            tpm = rpk / sum_rpk[infile] * 1000000
-            fout.write('\t{:.3f}'.format(tpm))
-        fout.write('\n')
+
+for findex, infile in enumerate(files):
+    sample = infile.split('/')[-1].rsplit('_',1)[0]
+    indf = pd.read_csv(infile, header=0, sep='\t', comment='#')
+    if findex == 0:
+        rawdf = indf.iloc[:,[0, 5, 6]]
+        columns = ['Geneid', 'Length', sample]
+        continue
+    df1 = indf.iloc[:,6]
+    columns.append(sample)
+    rawdf = pd.concat([rawdf, df1], axis=1)
+rawdf.columns = columns
+
+rawdf.to_csv(outfile2, sep='\t', index=False)
+tpmdf = rawdf.iloc[:,[0, 1]]
+
+for col_ind in range(2, len(files)+2):
+    df1 = 1000 * rawdf.iloc[:,col_ind] / rawdf.iloc[:,1]
+    df1 = 1000000 * df1 / sum(df1)
+    tpmdf = pd.concat([tpmdf, df1], axis=1)
+
+tpmdf.columns = columns
+tpmdf.to_csv(outfile1, sep='\t', index=False)
+
