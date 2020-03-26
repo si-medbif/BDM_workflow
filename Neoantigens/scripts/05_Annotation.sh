@@ -7,16 +7,18 @@
 
 # Required: vep docker image (see instructions in configure_vep.txt)
 
-dir_Reference=/gnome/genome_database/gatk_bundle/hg38bundle
-dir_Output=$1
-sample=$2
+DIR_REFERENCE=/gnome/genome_database/gatk_bundle/hg38bundle
+DIR_OUTPUT=$1
+SAMPLE=$2
 
-docker run --rm -v ${dir_Reference}:/Reference \
-	-v ${dir_Output}:/Output \
+docker run --rm -v ${DIR_REFERENCE}:/Reference \
+	-v ${DIR_OUTPUT}:/Output \
 	vep:v2 ./vep \
-	--input_file /Output/${sample}/VCF/${sample}_m2_filtered.vcf.gz \
-	--output_file /Output/${sample}/VCF/${sample}_m2_vep.vcf \
+	--input_file /Output/${SAMPLE}/VCF/${SAMPLE}_m2_filtered.vcf.gz \
+	--output_file /Output/${SAMPLE}/VCF/${SAMPLE}_m2_vep.vcf \
 	--format vcf --vcf --symbol --terms SO --tsl --hgvs \
 	--fasta /Reference/Homo_sapiens_assembly38.fasta \
 	--offline --cache \
 	--plugin Downstream --plugin Wildtype --force_overwrite
+
+./filter_annotated_vcf.py ${DIR_OUTPUT}/${SAMPLE}/VCF/${SAMPLE}_m2_vep.vcf ${DIR_OUTPUT}/${SAMPLE}/VCF/${SAMPLE}_m2_vep_filtered.vcf

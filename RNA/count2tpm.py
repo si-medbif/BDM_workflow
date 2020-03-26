@@ -62,5 +62,5 @@ for col_ind in range(2, len(files)+2):
 tpmdf.columns = columns
 
 outdf = tpmdf.drop('Length', axis=1)
-outdf.to_csv(outfile1, sep='\t', index=False, float_format='%.3f)
+outdf.to_csv(outfile1, sep='\t', index=False, float_format='%.3f')
 

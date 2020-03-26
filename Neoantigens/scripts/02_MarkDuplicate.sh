@@ -5,15 +5,16 @@
 # Input: BAM file, sorted by coordinate
 # Output: BAM file, duplicate reads are tagged
 
-dir_Output=$1
+DIR_OUTPUT=$1
+SAMPLE=$2
 
-docker run --rm -v ${dir_Output}:/Output \
+docker run --rm -v ${DIR_OUTPUT}:/Output \
 	broadinstitute/picard:latest \
 	MarkDuplicates \
 	CREATE_INDEX=true \
-	I=/Output/$2/BAM/$2_sorted.bam \
-	O=/Output/$2/BAM/$2_dedupped.bam \
-	M=/Output/$2/BAM/$2_dedup_output.metrics
+	I=/Output/${SAMPLE}/BAM/${SAMPLE}_sorted.bam \
+	O=/Output/${SAMPLE}/BAM/${SAMPLE}_dedupped.bam \
+	M=/Output/${SAMPLE}/BAM/${SAMPLE}_dedup_output.metrics
 
 
 

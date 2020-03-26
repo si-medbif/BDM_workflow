@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Preparation: Add HLA-alleles to the line "HLA="
-
 # Usage: 06_EpitopePrediction.sh <output-folder> <sample-name> <HLA-alleles>
 # HLA-alleles are provided as a comma-separated list of 4-digit alleles: 
 #   HLA-A*24:02,HLA-B*54:01,HLA-C*03:02,DQA1*01:01,DQB1*05:03,DRB1*03:01
@@ -16,7 +14,7 @@ mkdir -p ${dir_Output}/${sample}/pvac
 
 docker run --rm -v ${dir_Output}:/Output \
        -v ${dir_Output}/${sample}/pvac:/output_dir \
-       griffithlab/pvactools \
+       griffithlab/pvactools:1.5.4 \
 	pvacseq run \
        /Output/${sample}/VCF/${sample}_m2_vep_filtered.vcf \
        -t 4 \
