@@ -1,11 +1,17 @@
 #!/bin/bash                                                                                                                                                              
 set -e
 
+# What pVACSec is looking for in the VCF file:
+# Type 			: VCF sample 				: Format Fields
+# Tumor DNA Coverage 	: single-sample VCF or sample_name 	: AD, DP, and AF
+# Tumor RNA Coverage 	: single-sample VCF or sample_name 	: RAD, RDP, and RAF
+# Normal DNA Coverage 	: --normal-sample-name 			: AD, DP, and AF
+
 DIR_OUTPUT=$1
 DIR_HG38=/gnome/genome_database/gatk_bundle/hg38bundle
 SAMPLE=$2
 
-# Creates the *readcount_snv.tsv, and *readcount_indel.tsv
+# Creates the *readcount_snv.tsv, and *readcount_indel.tsv from RNA BAM-files.
 docker run --rm -v ${DIR_OUTPUT}:/Output \
         -v ${DIR_HG38}:/Hg38_dir \
         mgibio/bam_readcount_helper-cwl:1.0.0 \
