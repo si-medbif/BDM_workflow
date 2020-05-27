@@ -1,6 +1,11 @@
 #!/bin/bash
 
-# Usage: 04_SomaticVariantCall.sh <output-folder> <GATK-resource-folder> <Tumor_sample> <Normal_sample>
+# Usage: 04_SomaticVariantCall.sh 
+#           <output-folder> 
+#           <GATK-resource-folder> 
+#           <folder with bed file for WES regions> 
+#           <Tumor_sample> 
+#           <Normal_sample>
 
 # Input: BAM file, base quality scores are recalibrated.
 # Output: VCF file, somatic variants, filtered.
@@ -9,7 +14,7 @@
 DIR_OUTPUT=$1
 DIR_HG38=/gnome/genome_database/gatk_bundle/hg38bundle
 DIR_REFERENCE=$2
-DIR_GATK=$3
+DIR_GATK=/gnome/tutorial_datasets/gatk_somatic_variant_calling/
 TUMOR=$4
 NORMAL=$5
 
@@ -25,7 +30,7 @@ docker run --rm -v ${DIR_OUTPUT}:/Output \
         -I /Output/${NORMAL}/BAM/${NORMAL}_recal.bam \
         -normal ${NORMAL} \
 	-L /Reference/agilent_sureselect_V5_UTR_hg38_clean.bed \
-	-pon /Reference/BTN.pon.vcf.gz \
+	-pon /GATKtutorial/1000g_pon.hg38.vcf.gz \
         --germline-resource /GATKtutorial/af-only-gnomad.hg38.vcf.gz \
         --af-of-alleles-not-in-resource 0.0000025 \
         -O /Output/${TUMOR}/VCF/${TUMOR}_m2.vcf.gz
