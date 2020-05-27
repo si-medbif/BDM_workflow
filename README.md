@@ -3,7 +3,7 @@ A collection of workflows
 
 ## [RNA](https://github.com/si-medbif/BDM_workflow/tree/master/RNA)
 
-## WES
+## [WES](https://github.com/si-medbif/BDM_workflow/tree/master/WES)
 
 ## [WGS](https://github.com/si-medbif/BDM_workflow/tree/master/WGS)
 
