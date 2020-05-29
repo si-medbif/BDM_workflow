@@ -7,5 +7,5 @@ docker run --rm -v ${DIR_FASTQ}:/fastq \
     gcatio/fastqc opt/FastQC/fastqc \
     -o /fastq \
     -t 2 \
-    /fastq/${SAMPLE}_R1.fastq.gz \
-    /fastq/${SAMPLE}_R2.fastq.gz
+    /fastq/${SAMPLE}_1.fq.gz \
+    /fastq/${SAMPLE}_2.fq.gz
