@@ -1,7 +1,8 @@
 #!/bin/bash
 
-OUT=/gnome/tmp
+OUT=$1
 REFERENCE=/gnome/genome_database/ensembl
+SAMPLE=$2
 
 #Split and trim reads and reassign mapping qualities 
 docker run --rm -v ${OUT}:/out \
@@ -9,6 +10,6 @@ docker run --rm -v ${OUT}:/out \
 	broadinstitute/gatk:4.1.4.1 gatk --java-options "-Xmx8G" \
 	SplitNCigarReads \
 	-R /ref/Homo_sapiens.GRCh38.dna.primary_assembly.convert.fa \
-	-I /out/$1_dedup.bam \
-	-O /out/$1_splitncigar.bam 
+	-I /out/${SAMPLE}_dedup.bam \
+	-O /out/${SAMPLE}_splitncigar.bam 
 

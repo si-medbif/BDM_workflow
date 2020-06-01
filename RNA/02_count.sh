@@ -9,9 +9,10 @@
 # -J  Count number of reads supporting each exon-exon junction. Results are saved to a file named '<output_file>.jcounts' 
 
 FEATURECOUNTS=/home/harald/subread-1.6.3-Linux-x86_64/bin
-BAMFOLDER=/gnome/tmp
+BAMFOLDER=$1
 GTF=/gnome/genome_database/ensembl/Homo_sapiens.GRCh38.98.convert.gtf
-OUTFOLDER=/gnome/tmp
+OUTFOLDER=$2
+SAMPLE=$3
 
 ${FEATURECOUNTS}/featureCounts \
         -p \
@@ -22,5 +23,5 @@ ${FEATURECOUNTS}/featureCounts \
 	-Q 30 \
 	-O \
         -a ${GTF} \
-        -o ${OUTFOLDER}/readcounts.featurecounts.txt \
-        ${BAMFOLDER}/$1_Aligned.sortedByCoord.out.bam 
+        -o ${OUTFOLDER}/${SAMPLE}.readcounts.featurecounts.txt \
+        ${BAMFOLDER}/${SAMPLE}_Aligned.sortedByCoord.out.bam 

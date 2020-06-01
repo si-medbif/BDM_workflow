@@ -1,27 +1,28 @@
 #!/bin/bash
 
 
-OUT=/gnome/tmp
+OUT=$1
+SAMPLE=$2
 
 # Add read group and sort SAM file
 docker run --rm -v ${OUT}:/out \
 	broadinstitute/gatk:4.1.4.1 gatk --java-options "-Xmx8G" \
 	AddOrReplaceReadGroups \
-	-I /out/$1_Aligned.sortedByCoord.out.bam \
-	-O /out/$1_rg_added_sorted.bam \
+	-I /out/${SAMPLE}_Aligned.sortedByCoord.out.bam \
+	-O /out/${SAMPLE}_rg_added_sorted.bam \
 	-SO coordinate \
-	-RGID $1 \
+	-RGID ${SAMPLE} \
 	-RGLB agilent \
 	-RGPL illumina \
 	-RGPU miseq \
-	-RGSM $1
+	-RGSM ${SAMPLE}
 
 # Deduplicate
 docker run --rm -v ${OUT}:/out \
 	broadinstitute/picard:latest \
 	MarkDuplicates \
-	I=/out/$1_rg_added_sorted.bam \
-	O=/out/$1_dedup.bam \
+	I=/out/${SAMPLE}_rg_added_sorted.bam \
+	O=/out/${SAMPLE}_dedup.bam \
 	CREATE_INDEX=true \
-	M=/out/$1_dedup_output.metrics
+	M=/out/${SAMPLE}_dedup_output.metrics
 
