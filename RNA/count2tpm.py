@@ -5,7 +5,7 @@
     Input:  Either: 
               Folder name where featureCounts output is stored as <SAMPLE>_readcounts.featurecounts.txt
             Or:
-              File with list of featureCounts output files. First line is folder to store output.
+              File with list of featureCounts output files. 
     Output: One file with TPM values for each sample
             One file with raw counts for each sample
 """
@@ -13,30 +13,40 @@
 import sys
 import glob
 import pandas as pd
+import argparse
 
-inparam = sys.argv[1]
+# construct the argument parse and parse the arguments
+ap = argparse.ArgumentParser()
+group = ap.add_mutually_exclusive_group()
+group.add_argument("-f", "--folder", help="path to the folder with count-files")
+group.add_argument("-s", "--samples", help="file with list of the count-files")
+ap.add_argument("-n", "--names", help="Map for gene translation [alias1 alias2 ... new]")
+ap.add_argument("-o", "--outfile", help="Output file prefix", default="project")
+args = vars(ap.parse_args())
 
-try:
-    with open(inparam, 'r') as fin:
+if args["samples"] is not None:
+    with open(args["samples"], 'r') as fin:
         files = []
         for line in fin:
-            l = line.strip().split()
-            if len(l) == 2:
-                if l[0] == 'PROJECT':
-                    project_name = l[1]
-                elif l[0] == 'OUT':
-                    out_folder = l[1]
-                elif l[0] == 'FILE':
-                    files.append(l[1])
-            else:
-                pass
-except IsADirectoryError:
-    files = glob.glob(inparam+'/*readcounts.featurecounts.txt')
-    out_folder = inparam
+            files.append(line.strip())
+elif args['folder'] is not None:
+    files = glob.glob(args["folder"]+'/*readcounts.featurecounts.txt')
+    out_folder = args["folder"]
     project_name = 'project'
+else:
+    sys.stderr.write('ERROR: missing sample list / sample folder\n')
+    sys.exit(1)
 
-outfile1 = '{}/{}_{}-samples_tpm.tsv'.format(out_folder, project_name, len(files))
-outfile2 = '{}/{}_{}-samples_raw.tsv'.format(out_folder, project_name, len(files))
+db = {}
+if args["names"] is not None:
+    with open(args["names"], 'r') as fin:
+        for line in fin:
+            l = line.strip().split()
+            for el in l[0:-1]:
+                db[el] = l[-1]
+
+outfile1 = '{}_{}-samples_tpm.tsv'.format(args["outfile"], len(files))
+outfile2 = '{}_{}-samples_raw.tsv'.format(args["outfile"], len(files))
 
 for findex, infile in enumerate(files):
     infile.strip().rsplit('_',1)[0] + 'counts.tsv'
@@ -50,6 +60,8 @@ for findex, infile in enumerate(files):
     columns.append(sample)
     rawdf = pd.concat([rawdf, df1], axis=1)
 rawdf.columns = columns
+if len(db) > 0:
+    rawdf['Geneid'] = rawdf['Geneid'].map(db)
 outdf = rawdf.drop('Length', axis=1)
 outdf.to_csv(outfile2, sep='\t', index=False, float_format='%.3f')
 tpmdf = rawdf.iloc[:,[0, 1]]
@@ -62,5 +74,5 @@ for col_ind in range(2, len(files)+2):
 tpmdf.columns = columns
 
 outdf = tpmdf.drop('Length', axis=1)
-outdf.to_csv(outfile1, sep='\t', index=False, float_format='%.3f')
+outdf.to_csv(outfile1, sep='\t', index=False, na_rep = 'NaN', float_format='%.3f')
 
