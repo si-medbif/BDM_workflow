@@ -35,7 +35,7 @@ Used options:
 	1. ./02_count.sh BAMFOLDER OUTFOLDER SAMPLE
 	2. ./count2tpm.py OUTFOLDER
 7. Combine the created figures into a final report.
-	1. TODO
+	1. ./create_final_report.py
 
 ## Suggested workflow for detecting variants
 
