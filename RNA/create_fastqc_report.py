@@ -10,7 +10,7 @@ import zipfile
 import re
 
 if len(sys.argv) < 3:
-    sys.stderr.write('Usage: create_bam_report.py <fastq-folder> <sample1> <sample2> ... \n')
+    sys.stderr.write('Usage: create_fastqc_report.py <fastqc-folder> <sample1> <sample2> ... \n')
     sys.exit(1)
 
 fastqfolder = sys.argv[1]

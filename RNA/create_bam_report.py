@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import zipfile
 import re
 
-if len(sys.argv) != 4:
+if len(sys.argv) < 3:
     sys.stderr.write('Usage: create_bam_report.py <BAM-folder> <sample1> <sample2> ... \n')
     sys.exit(1)
 
