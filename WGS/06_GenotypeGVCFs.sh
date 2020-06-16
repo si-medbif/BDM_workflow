@@ -1,10 +1,10 @@
 #!/bin/bash
 
-dir_Output=$1
+VCFFOLDER=$1
 REFERENCE=/gnome/genome_database/gatk_bundle/hg38bundle
 CHROM=$2
 
-docker run --rm -v ${dir_Output}:/Output \
+docker run --rm -v ${VCFFOLDER}:/Output \
 	-v ${REFERENCE}:/ref \
 	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" \
 	GenotypeGVCFs \

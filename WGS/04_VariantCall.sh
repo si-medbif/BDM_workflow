@@ -1,16 +1,16 @@
 #!/bin/bash
 
-dir_Output=$1
+VCFFOLDER=$1
 dir_Hg38=/gnome/genome_database/gatk_bundle/hg38bundle
 SAMPLE=$2
 
-docker run --rm -v ${dir_Output}:/Output \
+docker run --rm -v ${VCFFOLDER}:/Output \
     -v ${dir_Hg38}:/Hg38_dir \
     broadinstitute/gatk gatk --java-options "-Xmx16g" HaplotypeCaller \
     -R /Hg38_dir/Homo_sapiens_assembly38.fasta \
-    -I /Output/${SAMPLE}/BAM/${SAMPLE}_recal.bam \
+    -I /Output/BAM/${SAMPLE}_recal.bam \
     -D /Hg38_dir/dbsnp_146.hg38.vcf.gz \
-    -O /Output/${SAMPLE}/${SAMPLE}.g.vcf \
+    -O /Output/${SAMPLE}.g.vcf \
     -ERC GVCF \
     --pcr-indel-model NONE \
     --annotation-group StandardHCAnnotation \

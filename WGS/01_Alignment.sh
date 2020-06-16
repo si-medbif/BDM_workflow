@@ -6,15 +6,12 @@
 # Requires: samtools v.1.7
 #           docker image biocontainers/bwa
 
-dir_fastq=$1
-dir_Output=$2
+FASTQFOLDER=$1
+BAMFOLDER=$2
 dir_Hg38=/gnome/genome_database/gatk_bundle/hg38bundle
 SAMPLE=$3
 
-mkdir -p ${dir_Output}/${SAMPLE}
-mkdir -p ${dir_Output}/${SAMPLE}/{BAM,VCF}
-
-docker run --rm -v ${dir_fastq}:/fastq \
+docker run --rm -v ${FASTQFOLDER}:/fastq \
 	-v ${dir_Hg38}:/reference \
 	biocontainers/bwa:v0.7.15_cv3 \
 	bwa mem \
@@ -23,4 +20,4 @@ docker run --rm -v ${dir_fastq}:/fastq \
 	/reference/Homo_sapiens_assembly38.fasta.gz \
 	/fastq/${SAMPLE}_R1.fastq.gz \
 	/fastq/${SAMPLE}_R2.fastq.gz \
-	| samtools sort -o ${dir_Output}/${SAMPLE}/BAM/${SAMPLE}_sorted.bam
+	| samtools sort -o ${BAMFOLDER}/${SAMPLE}_sorted.bam

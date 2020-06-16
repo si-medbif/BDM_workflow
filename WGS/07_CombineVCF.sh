@@ -1,8 +1,8 @@
 #!/bin/bash
 
-dir_Output=$1
+VCFFOLDER=$1
 
-docker run --rm -v ${dir_Output}:/Output \
+docker run --rm -v ${VCFFOLDER}:/Output \
 	broadinstitute/picard:latest \
 	MergeVcfs \
 	CREATE_INDEX=true \
