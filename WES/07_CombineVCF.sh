@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dir_Output=$1
+VCFFOLDER=$1
 
 docker run --rm -v ${dir_Output}:/Output \
 	broadinstitute/picard:latest \

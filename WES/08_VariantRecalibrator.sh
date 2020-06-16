@@ -1,9 +1,9 @@
 #!/bin/bash
 
-dir_Output=$1
+VCFFOLDER=$1
 REFERENCE=/gnome/genome_database/gatk_bundle/hg38bundle
 
-docker run --rm -v ${dir_Output}:/Output \
+docker run --rm -v ${VCFFOLDER}:/Output \
 	-v ${REFERENCE}:/ref \
 	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" \
 	VariantRecalibrator \
@@ -15,11 +15,11 @@ docker run --rm -v ${dir_Output}:/Output \
 	--resource:dbsnp,known=true,training=false,truth=false,prior=2.0 /ref/dbsnp_146.hg38.vcf.gz \
 	-an QD -an MQ -an MQRankSum -an ReadPosRankSum -an FS -an SOR \
 	-mode SNP \
-	-O /Output/dengue.recal \
+	-O /Output/project.recal \
 	--tranches-file /Output/project.tranches \
 	--rscript-file /Output/project.plots.R
 
-docker run --rm -v ${dir_Output}:/Output \
+docker run --rm -v ${VCFFOLDER}:/Output \
 	-v ${REFERENCE}:/ref \
 	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" \
 	ApplyVQSR \
@@ -31,7 +31,7 @@ docker run --rm -v ${dir_Output}:/Output \
 	--recal-file /Output/project.recal \
 	-mode SNP
 
-docker run --rm -v ${dir_Output}:/Output \
+docker run --rm -v ${VCFFOLDER}:/Output \
 	-v ${REFERENCE}:/ref \
 	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" \
 	VariantRecalibrator \
@@ -45,7 +45,7 @@ docker run --rm -v ${dir_Output}:/Output \
 	--tranches-file /Output/project.indel.tranches \
 	--rscript-file /Output/project.indel.plots.R
 
-docker run --rm -v ${dir_Output}:/Output \
+docker run --rm -v ${VCFFOLDER}:/Output \
 	-v ${REFERENCE}:/ref \
 	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" \
 	ApplyVQSR \

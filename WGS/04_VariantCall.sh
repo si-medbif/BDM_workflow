@@ -8,7 +8,7 @@ docker run --rm -v ${VCFFOLDER}:/Output \
     -v ${dir_Hg38}:/Hg38_dir \
     broadinstitute/gatk gatk --java-options "-Xmx16g" HaplotypeCaller \
     -R /Hg38_dir/Homo_sapiens_assembly38.fasta \
-    -I /Output/BAM/${SAMPLE}_recal.bam \
+    -I /Output/${SAMPLE}_recal.bam \
     -D /Hg38_dir/dbsnp_146.hg38.vcf.gz \
     -O /Output/${SAMPLE}.g.vcf \
     -ERC GVCF \

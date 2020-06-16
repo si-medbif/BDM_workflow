@@ -5,5 +5,5 @@ SAMPLE=$2
 samtools stats \
 	-p \
 	--threads 8 \
-	${BAMFOLDER}/${SAMPLE}/BAM/${SAMPLE}_dedupped.bam \
-        > ${BAMFOLDER}/${SAMPLE}/BAM/${SAMPLE}_dedupped.bam.stats.txt
+	${BAMFOLDER}/${SAMPLE}_recal.bam \
+        > ${BAMFOLDER}/${SAMPLE}_recal.bam.stats.txt

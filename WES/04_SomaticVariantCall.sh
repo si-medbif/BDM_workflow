@@ -11,59 +11,65 @@
 # Output: VCF file, somatic variants, filtered.
 
 
-DIR_OUTPUT=$1
+BAMFOLDER_TUMOR=$1
+BAMFOLDER_NORMAL=$2
+VCFFOLDER=$3
 DIR_HG38=/gnome/genome_database/gatk_bundle/hg38bundle
-DIR_REFERENCE=$2
+BEDFOLDER=$4
 DIR_GATK=/gnome/tutorial_datasets/gatk_somatic_variant_calling/
-TUMOR=$4
-NORMAL=$5
+TUMOR=$5
+NORMAL=$6
 
-docker run --rm -v ${DIR_OUTPUT}:/Output \
+docker run --rm -v ${BAMFOLDER_TUMOR}:/bam_tumor \
+	-v ${BAMFOLDER_NORMAL}:/bam_normal \
+	-v ${VCFFOLDER}:/vcf_folder \
         -v ${DIR_HG38}:/Hg38_dir \
 	-v ${DIR_GATK}:/GATKtutorial \
-	-v ${DIR_REFERENCE}:/Reference \
+	-v ${BEDFOLDER}:/Reference \
 	broadinstitute/gatk:4.1.5.0 gatk \
 	--java-options "-Xmx8g" Mutect2 \
         -R /Hg38_dir/Homo_sapiens_assembly38.fasta \
-        -I /Output/${TUMOR}/BAM/${TUMOR}_recal.bam \
+        -I /bam_tumor/${TUMOR}_recal.bam \
         -tumor ${TUMOR} \
-        -I /Output/${NORMAL}/BAM/${NORMAL}_recal.bam \
+        -I /bam_normal/${NORMAL}_recal.bam \
         -normal ${NORMAL} \
 	-L /Reference/agilent_sureselect_V5_UTR_hg38_clean.bed \
 	-pon /GATKtutorial/1000g_pon.hg38.vcf.gz \
         --germline-resource /GATKtutorial/af-only-gnomad.hg38.vcf.gz \
         --af-of-alleles-not-in-resource 0.0000025 \
-        -O /Output/${TUMOR}/VCF/${TUMOR}_m2.vcf.gz
+        -O /vcf_folder/${TUMOR}_m2.vcf.gz
 
 docker run --rm -v ${DIR_GATK}:/data \
-	-v ${DIR_OUTPUT}:/out \
+	-v ${BAMFOLDER_TUMOR}:/out \
 	broadinstitute/gatk:4.1.5.0 gatk \
 	--java-options "-Xmx8g" GetPileupSummaries \
-	-I /out/${TUMOR}/BAM/${TUMOR}_recal.bam \
+	-I /out/${TUMOR}_recal.bam \
 	-V /data/small_exac_common_3.hg38.vcf.gz \
 	-L /data/small_exac_common_3.hg38.vcf.gz \
-	-O /out/${TUMOR}/BAM/tumor_getpileupsummaries.table
+	-O /out/${TUMOR}_getpileupsummaries.table
 
 docker run --rm -v ${DIR_GATK}:/data \
-	-v ${DIR_OUTPUT}:/out \
+	-v ${BAMFOLDER_NORMAL}:/out \
 	broadinstitute/gatk:4.1.5.0 gatk \
 	--java-options "-Xmx8g" GetPileupSummaries \
-	-I /out/${NORMAL}/BAM/${NORMAL}_recal.bam \
+	-I /out/${NORMAL}_recal.bam \
 	-V /data/small_exac_common_3.hg38.vcf.gz \
 	-L /data/small_exac_common_3.hg38.vcf.gz \
-	-O /out/${TUMOR}/BAM/normal_getpileupsummaries.table
+	-O /out/${NORMAL}_getpileupsummaries.table
 
 docker run --rm -v ${DIR_GATK}:/data \
-	-v ${DIR_OUTPUT}:/out \
+	-v ${BAMFOLDER_TUMOR}:/bam_tumor \
+	-v ${BAMFOLDER_NORMAL}:/bam_normal \
 	broadinstitute/gatk:4.1.5.0 gatk \
 	--java-options "-Xmx8g" CalculateContamination \
-	-I /out/${TUMOR}/BAM/tumor_getpileupsummaries.table \
-	-matched /out/${TUMOR}/BAM/normal_getpileupsummaries.table \
-	-O /out/${TUMOR}/BAM/tumor_calculatecontamination.table
+	-I /bam_tumor/${TUMOR}_getpileupsummaries.table \
+	-matched /bam_normal/${NORMAL}_getpileupsummaries.table \
+	-O /bam_tumor/${TUMOR}_calculatecontamination.table
 
-docker run --rm -v ${DIR_OUTPUT}:/out \
+docker run --rm -v ${VCFFOLDER}:/out \
+	-v ${BAMFOLDER_TUMOR}:/bam_folder \
 	broadinstitute/gatk:4.1.5.0 gatk \
 	--java-options "-Xmx8g" FilterMutectCalls \
-	-V /out/${TUMOR}/VCF/${TUMOR}_m2.vcf.gz \
-	--contamination-table /out/${TUMOR}/BAM/tumor_calculatecontamination.table \
-	-O /out/${TUMOR}/VCF/${TUMOR}_m2_filtered.vcf.gz
+	-V /out/${TUMOR}_m2.vcf.gz \
+	--contamination-table /bam_folder/${TUMOR}_calculatecontamination.table \
+	-O /out/${TUMOR}_m2_filtered.vcf.gz
