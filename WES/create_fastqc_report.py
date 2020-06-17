@@ -61,9 +61,9 @@ warns = [[],[]] # Per base sequence quality, Per sequence GC content
 for index, sample in enumerate(samples):
     nc, nr = index%4, index//4
     for direction in ['1','2']:
-        fastq_zip = '{}/Sample_{}/{}_combined_R{}_fastqc.zip'.format(fastqfolder, sample, sample, direction)
+        fastq_zip = '{}/{}_R{}_fastqc.zip'.format(fastqfolder, sample, direction)
         archive = zipfile.ZipFile(fastq_zip, 'r')
-        fastqc_report1 = str(archive.read('{}_combined_R{}_fastqc/fastqc_data.txt'.format(sample, direction)))
+        fastqc_report1 = str(archive.read('{}_R{}_fastqc/fastqc_data.txt'.format(sample, direction)))
         baseq1 = re.search('>>Per base sequence quality(.*?)>>END_MODULE', fastqc_report1).group(1)
         gc_content1 = re.search('>>Per sequence GC content(.*?)>>END_MODULE', fastqc_report1).group(1)
         bq1 = baseq1.split('\\n')
@@ -81,10 +81,16 @@ for index, sample in enumerate(samples):
         x = np.arange(1,len(bq_x1)+1)
         ax1.plot(x, bq_y1, color=col[direction], label=sample+'_'+direction)
         ax2.plot(gc_y1, color=col[direction], label=sample+'_'+direction)
-        ax3[nr, nc].plot(x, bq_y1, color=col[direction], label=sample+'_'+direction)
-        ax3[nr, nc].set_xlabel(sample)
-        ax4[nr, nc].plot(gc_y1, color=col[direction], label=sample+'_'+direction)
-        ax4[nr, nc].set_xlabel(sample)
+        if rows > 1:
+            ax3[nr, nc].plot(x, bq_y1, color=col[direction], label=sample+'_'+direction)
+            ax3[nr, nc].set_xlabel(sample)
+            ax4[nr, nc].plot(gc_y1, color=col[direction], label=sample+'_'+direction)
+            ax4[nr, nc].set_xlabel(sample)
+        else:
+            ax3[nc].plot(x, bq_y1, color=col[direction], label=sample+'_'+direction)
+            ax3[nc].set_xlabel(sample)
+            ax4[nc].plot(gc_y1, color=col[direction], label=sample+'_'+direction)
+            ax4[nc].set_xlabel(sample)
 
 fout.write('\nPer base sequence quality:\n')
 if len(warns[0]) > 0:
@@ -115,8 +121,12 @@ ax1.set_ylim([0,40])
 ax2.set_title('FastQC: Per Sequence GC Content')
 ax2.set_xlabel('% GC')
 ax2.set_ylabel('Percentage')
-ax3[0,0].set_ylim([0,40])
-ax4[0,0].set_ylim([0,0.05])
+if rows > 1:
+    ax3[0,0].set_ylim([0,40])
+    ax4[0,0].set_ylim([0,0.05])
+else:
+    ax3[0].set_ylim([0,40])
+    ax4[0].set_ylim([0,0.05])
 fig1.savefig('figure1.png')
 fig2.savefig('figure2.png')
 fig3.savefig('figureS1.png')
