@@ -49,11 +49,26 @@ df = pd.DataFrame({'Samples': samples,
                    'Mapped to too many loci': mapped_to_too_many_loci
                    })
 df['Ratio'] = (df['Uniquely mapped reads']+df['Mapped to multiple loci']) / df['Input reads']
+df['Ratio'] = df['Ratio'].round(decimals=3)
 df['Unmapped reads'] = df['Input reads'] - df['Uniquely mapped reads'] - df['Mapped to multiple loci']
-x_size = min(20, int(len(samples)*0.5))
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(x_size,7))
-df[['Samples',
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(14,14))
+df = df[['Samples',
+    'Input reads',
     'Uniquely mapped reads',
     'Mapped to multiple loci',
-    'Unmapped reads']].set_index('Samples').plot(kind='bar', stacked=True, ax = ax)
+    'Unmapped reads',
+    'Ratio']]
+
+N = len(samples)
+first = df['Unmapped reads']
+second = df['Mapped to multiple loci']
+third = df['Uniquely mapped reads']
+ind = np.arange(N)
+width = 0.35
+p1 = ax.bar(ind, first, width, color='red')
+p2 = ax.bar(ind, second, width, bottom = first, color = 'blue')
+p3 = ax.bar(ind, third, width, bottom = second+first, color = 'green')
+t1 = plt.xticks(ind,samples, rotation=45)
+l = plt.legend((p1[0], p2[0], p3[0]), ('Unmapped', 'Multiple', 'Unique'))
+df.to_csv('table1.tsv', sep='\t', index=None)
 fig.savefig('figure3.png')

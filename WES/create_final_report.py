@@ -2,10 +2,11 @@
 
 import sys
 import datetime
+import pandas as pd
 
-reportfile = 'WGS_report.md'
+reportfile = 'WES_report.md'
 
-header = '# WGS Analysis Report\n{date:%Y-%m-%d %H:%M:%S}\n'.format(date=datetime.datetime.now())
+header = '# WES Analysis Report\n{date:%Y-%m-%d %H:%M:%S}\n'.format(date=datetime.datetime.now())
 
 section1 = '## 1. Summary\n \
 This report includes quality check for raw sequencing data (section 2), \
@@ -23,6 +24,20 @@ section3 = '## 3. Mapping quality\n \
 ![Reads mapping](figure3.png) \n \
 Figure 3: The statistics of WGS mapping results'
 
+df = pd.read_table('table1.tsv', header=0)
+df['Ratio'] = df['Ratio'].round(decimals=3)
+table1 = 'Table1: The summary of RNAseq mapping results\n\n|'
+section = '|'
+for c in df.columns:
+    table1 += c+'|'
+    section += '---'+'|'
+table1 += '\n' + section + '\n'
+for ind, row in df.iterrows():
+    line = '|'
+    for c in row:
+        line += str(c)+'|'
+    table1 += line + '\n'
+        
 with open(reportfile, 'w') as fout:
     fout.write(header)
     fout.write('\n\n')
@@ -31,3 +46,5 @@ with open(reportfile, 'w') as fout:
     fout.write(section2)
     fout.write('\n\n')
     fout.write(section3)
+    fout.write('\n\n')
+    fout.write(table1)

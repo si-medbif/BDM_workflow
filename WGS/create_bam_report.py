@@ -58,6 +58,14 @@ df = pd.DataFrame({'Samples': samples,
                    'Unmapped reads': unmapped_reads
                    })
 df['Ratio'] = (df['Properly paired reads']+df['Reads with MQ0']) / df['Raw total sequences']
+df['Ratio'] = df['Ratio'].round(decimals=3)
+df = df[['Samples',
+        'Raw total sequences',
+        'Properly paired reads',
+        'Reads marked as duplicates',
+        'Reads with MQ0',
+        'Unmapped reads',
+        'Ratio']]
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(14,14))
 N = len(samples)
 first = df['Unmapped reads']
@@ -70,4 +78,5 @@ p2 = ax.bar(ind, second, width, bottom = first, color = 'blue')
 p3 = ax.bar(ind, third, width, bottom = second+first, color = 'green')
 t1 = plt.xticks(ind,samples, rotation=45)
 l = plt.legend((p1[0], p2[0], p3[0]), ('Unmapped', 'Multiple', 'Unique'))
+df.to_csv('table1.tsv', sep='\t', index=None)
 fig.savefig('figure3.png')
