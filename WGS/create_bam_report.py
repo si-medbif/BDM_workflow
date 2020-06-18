@@ -22,12 +22,15 @@ input_reads = []
 uniquely_mapped_reads = []
 mapped_to_multiple_loci = []
 mapped_to_too_many_loci = []
+unmapped_reads = []
 ratio = [] # (uniquely_mapped_reads + mapped_to_multiple_loci) / input_reads
     
 for sample in samples:
-    infile = '{}/{}_sorted.bam.stats.txt'.format(bamfolder, sample)
+    infile = '{}/{}_recal.bam.stats.txt'.format(bamfolder, sample)
     with open(infile, 'r') as fin:
         for line in fin:
+            if line.startswith('#'):
+                continue
             try:
                 l = line.strip().split('\t')
             except ValueError:
@@ -45,18 +48,26 @@ for sample in samples:
                 mapped_to_multiple_loci.append(int(value))
             elif key == 'reads MQ0:':
                 mapped_to_too_many_loci.append(int(value))
+            elif key == 'reads unmapped:':
+                unmapped_reads.append(int(value))
 df = pd.DataFrame({'Samples': samples,
                    'Raw total sequences':input_reads,
                    'Properly paired reads': uniquely_mapped_reads,
                    'Reads marked as duplicates': mapped_to_multiple_loci,
-                   'Reads with MQ0': mapped_to_too_many_loci
+                   'Reads with MQ0': mapped_to_too_many_loci,
+                   'Unmapped reads': unmapped_reads
                    })
 df['Ratio'] = (df['Properly paired reads']+df['Reads with MQ0']) / df['Raw total sequences']
-df['Unmapped reads'] = df['Raw total sequences'] - df['Properly paired reads'] - df['Reads with MQ0']
-x_size = min(20, int(len(samples)*0.5))
-fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(x_size,7))
-df[['Samples',
-    'Properly paired reads',
-    'Reads marked as duplicates',
-    'Unmapped reads']].set_index('Samples').plot(kind='bar', stacked=True, ax = ax)
+fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(14,14))
+N = len(samples)
+first = df['Unmapped reads']
+second = df['Reads with MQ0']
+third = df['Properly paired reads']
+ind = np.arange(N)
+width = 0.35
+p1 = ax.bar(ind, first, width, color='red')
+p2 = ax.bar(ind, second, width, bottom = first, color = 'blue')
+p3 = ax.bar(ind, third, width, bottom = second+first, color = 'green')
+t1 = plt.xticks(ind,samples, rotation=45)
+l = plt.legend((p1[0], p2[0], p3[0]), ('Unmapped', 'Multiple', 'Unique'))
 fig.savefig('figure3.png')
