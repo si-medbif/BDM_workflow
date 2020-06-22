@@ -5,14 +5,14 @@ REFERENCE=/gnome/genome_database/gatk_bundle/hg38bundle
 
 docker run --rm -v ${VCFFOLDER}:/Output \
 	-v ${REFERENCE}:/ref \
-	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" \
+	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx64g" \
 	VariantRecalibrator \
 	-R /ref/Homo_sapiens_assembly38.fasta \
 	-V /Output/project.raw.vcf.gz \
 	--resource:hapmap,known=false,training=true,truth=true,prior=15.0 /ref/hapmap_3.3.hg38.vcf.gz \
 	--resource:omni,known=false,training=true,truth=false,prior=12.0 /ref/1000G_omni2.5.hg38.vcf.gz \
 	--resource:1000G,known=false,training=true,truth=false,prior=10.0 /ref/1000G_phase1.snps.high_confidence.hg38.vcf.gz \
-	--resource:dbsnp,known=true,training=false,truth=false,prior=2.0 /ref/dbsnp_146.hg38.vcf.gz \
+	--resource:dbsnp,known=true,training=false,truth=false,prior=7.0 /ref/dbsnp_146.hg38.vcf.gz \
 	-an QD -an MQ -an MQRankSum -an ReadPosRankSum -an FS -an SOR \
 	-mode SNP \
 	-O /Output/project.recal \
@@ -21,7 +21,7 @@ docker run --rm -v ${VCFFOLDER}:/Output \
 
 docker run --rm -v ${VCFFOLDER}:/Output \
 	-v ${REFERENCE}:/ref \
-	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" \
+	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx64g" \
 	ApplyVQSR \
 	-R /ref/Homo_sapiens_assembly38.fasta \
 	-V /Output/project.raw.vcf.gz \
@@ -33,7 +33,7 @@ docker run --rm -v ${VCFFOLDER}:/Output \
 
 docker run --rm -v ${VCFFOLDER}:/Output \
 	-v ${REFERENCE}:/ref \
-	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" \
+	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx64g" \
 	VariantRecalibrator \
 	-R /ref/Homo_sapiens_assembly38.fasta \
 	-V /Output/project.raw.vcf.gz \
@@ -47,7 +47,7 @@ docker run --rm -v ${VCFFOLDER}:/Output \
 
 docker run --rm -v ${VCFFOLDER}:/Output \
 	-v ${REFERENCE}:/ref \
-	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" \
+	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx64g" \
 	ApplyVQSR \
 	-R /ref/Homo_sapiens_assembly38.fasta \
 	-V /Output/project.raw.vcf.gz \

@@ -26,7 +26,7 @@ docker run --rm -v ${BAMFOLDER_TUMOR}:/bam_tumor \
         -v ${DIR_HG38}:/Hg38_dir \
 	-v ${DIR_GATK}:/GATKtutorial \
 	-v ${BEDFOLDER}:/Reference \
-	broadinstitute/gatk:4.1.5.0 gatk \
+	broadinstitute/gatk:4.1.7.0 gatk \
 	--java-options "-Xmx8g" Mutect2 \
         -R /Hg38_dir/Homo_sapiens_assembly38.fasta \
         -I /bam_tumor/${TUMOR}_recal.bam \
@@ -41,7 +41,7 @@ docker run --rm -v ${BAMFOLDER_TUMOR}:/bam_tumor \
 
 docker run --rm -v ${DIR_GATK}:/data \
 	-v ${BAMFOLDER_TUMOR}:/out \
-	broadinstitute/gatk:4.1.5.0 gatk \
+	broadinstitute/gatk:4.1.7.0 gatk \
 	--java-options "-Xmx8g" GetPileupSummaries \
 	-I /out/${TUMOR}_recal.bam \
 	-V /data/small_exac_common_3.hg38.vcf.gz \
@@ -50,7 +50,7 @@ docker run --rm -v ${DIR_GATK}:/data \
 
 docker run --rm -v ${DIR_GATK}:/data \
 	-v ${BAMFOLDER_NORMAL}:/out \
-	broadinstitute/gatk:4.1.5.0 gatk \
+	broadinstitute/gatk:4.1.7.0 gatk \
 	--java-options "-Xmx8g" GetPileupSummaries \
 	-I /out/${NORMAL}_recal.bam \
 	-V /data/small_exac_common_3.hg38.vcf.gz \
@@ -60,7 +60,7 @@ docker run --rm -v ${DIR_GATK}:/data \
 docker run --rm -v ${DIR_GATK}:/data \
 	-v ${BAMFOLDER_TUMOR}:/bam_tumor \
 	-v ${BAMFOLDER_NORMAL}:/bam_normal \
-	broadinstitute/gatk:4.1.5.0 gatk \
+	broadinstitute/gatk:4.1.7.0 gatk \
 	--java-options "-Xmx8g" CalculateContamination \
 	-I /bam_tumor/${TUMOR}_getpileupsummaries.table \
 	-matched /bam_normal/${NORMAL}_getpileupsummaries.table \
@@ -68,7 +68,7 @@ docker run --rm -v ${DIR_GATK}:/data \
 
 docker run --rm -v ${VCFFOLDER}:/out \
 	-v ${BAMFOLDER_TUMOR}:/bam_folder \
-	broadinstitute/gatk:4.1.5.0 gatk \
+	broadinstitute/gatk:4.1.7.0 gatk \
 	--java-options "-Xmx8g" FilterMutectCalls \
 	-V /out/${TUMOR}_m2.vcf.gz \
 	--contamination-table /bam_folder/${TUMOR}_calculatecontamination.table \

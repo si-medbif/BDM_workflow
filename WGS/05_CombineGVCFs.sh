@@ -25,7 +25,8 @@ SAMPLE1=$3
 SAMPLE2=$4
 
 docker run --rm -v ${VCFFOLDER}:/Output \
-	broadinstitute/gatk:4.1.5.0 gatk --java-options "-Xmx64g" GenomicsDBImport \
+	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx64g" \
+	GenomicsDBImport \
 	-V /Output/${SAMPLE1}.g.vcf \
 	-V /Output/${SAMPLE2}.g.vcf \
 	--genomicsdb-workspace-path /Output/dengue_db.${CHROM} \
