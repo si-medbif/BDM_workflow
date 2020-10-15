@@ -10,7 +10,7 @@
 BAM_DIR=$1
 Hg38_DIR=/gnome/genome_database/gatk_bundle/hg38bundle
 OUT_DIR=$2
-SAMPLE=$3
+PROJECT=$3
 
 docker run --rm -v ${BAM_DIR}:/bam \
 	-v ${Hg38_DIR}:/reference \
@@ -19,6 +19,6 @@ docker run --rm -v ${BAM_DIR}:/bam \
 	-f /reference/Homo_sapiens_assembly38.fasta \
 	-i /out/pindelconfig.txt \
 	-c ALL \
-	-o /out/ \
+	-o /out/${PROJECT} \
 	-T 32
 
