@@ -3,13 +3,17 @@
 set -euo pipefail
 
 PROJECT=$1
-BAM=$2
-OUT=$3
+TUMORBAM=$2
+NORMALBAM=$3
+TUMOR=$4
+NORMAL=$5
+OUT=$6
 REFERENCE=/gnome/genome_database/gatk_bundle/hg38bundle
 
 
 docker run --rm \
-	-v ${BAM}:/bam \
+	-v ${TUMORBAM}:/tumor \
+	-v ${NORMALBAM}:/normal \
 	-v ${OUT}:/out \
 	-v ${REFERENCE}:/ref \
 	brentp/smoove smoove \
@@ -19,9 +23,7 @@ docker run --rm \
 	--exclude /ref/exclude.cnvnator_100bp.GRCh38.20170403.bed \
 	--fasta /ref/Homo_sapiens_assembly38.fasta \
 	--outdir /out \
-	--processes 16 \
+	--processes 8 \
 	--genotype \
-	/bam/BB-T0006-DNA_recal.bam \
-	/bam/BB-T0012-DNA_recal.bam \
-	/bam/BB-T0006-DNA_recal.bam
-#	/bam/*.bam
+	/tumor/${TUMOR}_recal.bam \
+	/normal/${NORMAL}_recal.bam
