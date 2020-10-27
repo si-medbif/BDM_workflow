@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-RESOURCE=/gnome/WTS/CTAT_Resource_Lib/GRCh38_v27_CTAT_lib_Feb092018/
+RESOURCE=/gnome/WTS/GRCh38_gencode_v33_CTAT_lib_Apr062020.plug-n-play
 FASTQ=$1
 OUT=$2
 FQSAMPLE=$3
