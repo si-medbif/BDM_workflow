@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Usage: 05_Annotation.sh <output-folder> <sample_name>
+# Usage: 09_Annotation.sh <output-folder> <sample_name>
 
 # Input: VCF file, somatic mutations
 # Output: VCF file, somatic mutations, annotated by VEP software package
