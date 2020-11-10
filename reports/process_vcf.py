@@ -16,6 +16,7 @@ infiles=[]
 
 syn = ['synonymous_variant']
 nonsyn = ['missense_variant', 'inframe_insertion', 'inframe_deletion']
+high = ['transcript_ablation','splice_acceptor_variant','splice_donor_variant','stop_gained','frameshift_variant','stop_lost','start_lost','transcript_amplification']
 
 with open(sample_files_list, 'r') as fin:
     for line in fin:
@@ -43,6 +44,7 @@ def geno_process(k,v):
 
 mutations = []
 db = {}
+genes = {}
 for sample, infile in infiles:
     db[sample] = {}
     if infile.endswith('gz'):
@@ -65,38 +67,56 @@ for sample, infile in infiles:
             annotations = info['CSQ'].split(',')
             for annotation in annotations:
                 an = annotation.split('|')
+                # Consequence
                 mut = an[1]
                 if mut in syn:
                     mut = 'synonymous'
                 elif mut in nonsyn:
                     mut = 'non-synonymous'
+                elif mut in high:
+                    mut = 'high'
                 else:
                     continue
                 if mut not in mutations:
                     mutations.append(mut)
+                # Gene
+                gene = an[3]
+                if gene not in genes:
+                    genes[gene] = [0,0,0] # non-syn, syn, high
                 break # Assuming the first annotation has the highest impact
+            # Consequence
             db[sample][mut] = db[sample].get(mut, 0) + 1
-# Write report
+            # Gene
+            if mut == 'synonymous':
+                genes[gene][0] += 1
+            elif mut == 'non-synonymous':
+                genes[gene][1] += 1
+            elif mut == 'high':
+                genes[gene][2] += 1
+# Write TMB report
 ns = []
 s = []
 t = []
+h = []
 samples = []
 sys.stdout.write('sample\t{}\ttotal\n'.format('\t'.join(mutations)))
 for sample, infile in infiles:
     samples.append(sample)
     sys.stdout.write('{}'.format(sample))
     total = 0
-    for mut in ['synonymous','non-synonymous']:
+    for mut in ['synonymous','non-synonymous','high']:
         an = db[sample].get(mut, 0)
         if mut == 'synonymous':
             s.append(an)
-        else:
+        elif mut == 'non-synonymous':
             ns.append(an)
+        elif mut == 'high':
+            h.append(an)
         total += an
         sys.stdout.write('\t{}'.format(an))
     t.append(total)
     sys.stdout.write('\t{}\n'.format(total))
-# Create plot
+# Create TMB plot
 fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(14,14), sharex=True)
 N = len(samples)
 first = s
@@ -112,4 +132,10 @@ p3 = ax[0].bar(ind, third, width, color = 'green')
 ax[0].set_title('Total')
 t1 = plt.xticks(ind,samples, rotation=90)
 #l = plt.legend((p1[0], p2[0], p3[0]), ('Synonymous', 'Non-Synonymous', 'Total'))
-fig.savefig('figure3.png')
+fig.savefig('tmb.png')
+
+# Write gene occurence report
+for gene in genes:
+    s, ns, h = genes[gene]
+    if s + ns + h > 1:
+        sys.stdout.write('{}\t{}\t{}\t{}\n'.format(gene, s, ns, h))
