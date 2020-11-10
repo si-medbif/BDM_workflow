@@ -9,7 +9,7 @@ SAMPLE=$2
 docker run --rm -v ${OUT}:/out \
 	-v ${REFERENCE}:/ref \
 	-v ${DATABASE}:/db \
-	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx8G" \
+	broadinstitute/gatk:4.1.9.0 gatk --java-options "-Xmx8G" \
 	BaseRecalibrator \
 	-R /ref/Homo_sapiens.GRCh38.dna.primary_assembly.convert.fa \
 	--known-sites /db/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz \
@@ -19,7 +19,7 @@ docker run --rm -v ${OUT}:/out \
 
 docker run --rm -v ${OUT}:/out \
 	-v ${REFERENCE}:/ref \
-	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx8G" \
+	broadinstitute/gatk:4.1.9.0 gatk --java-options "-Xmx8G" \
 	ApplyBQSR \
 	-R /ref/Homo_sapiens.GRCh38.dna.primary_assembly.convert.fa \
 	-I /out/${SAMPLE}_splitncigar.bam \

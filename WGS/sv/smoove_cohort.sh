@@ -6,7 +6,8 @@ PROJECT=$1
 BAM=$2
 OUT=$3
 REFERENCE=/gnome/genome_database/gatk_bundle/hg38bundle
-
+SAMPLE1=$4
+SAMPLE2=$5
 
 docker run --rm \
 	-v ${BAM}:/bam \
@@ -21,4 +22,5 @@ docker run --rm \
 	--outdir /out \
 	--processes 16 \
 	--genotype \
-	/bam/*_recal.bam
+	/bam/${SAMPLE1}_recal.bam \
+	/bam/${SAMPLE2}_recal.bam

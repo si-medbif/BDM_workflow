@@ -9,7 +9,7 @@ SAMPLE=$2
 docker run --rm -v ${OUT}:/out \
 	-v ${REFERENCE}:/ref \
 	-v ${DATABASE}:/db \
-	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx8G" \
+	broadinstitute/gatk:4.1.9.0 gatk --java-options "-Xmx8G" \
 	HaplotypeCaller \
 	-R /ref/Homo_sapiens.GRCh38.dna.primary_assembly.convert.fa \
 	-I /out/${SAMPLE}_recal.bam \
@@ -22,7 +22,7 @@ docker run --rm -v ${OUT}:/out \
 docker run --rm -v ${OUT}:/out \
 	-v ${REFERENCE}:/ref \
 	-v ${DATABASE}:/db \
-	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx8G" \
+	broadinstitute/gatk:4.1.9.0 gatk --java-options "-Xmx8G" \
 	VariantFiltration \
 	-R /ref/Homo_sapiens.GRCh38.dna.primary_assembly.convert.fa \
 	-V /out/${SAMPLE}_hc_raw.vcf \

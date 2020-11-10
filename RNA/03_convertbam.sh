@@ -6,7 +6,7 @@ SAMPLE=$2
 
 # Add read group and sort SAM file
 docker run --rm -v ${OUT}:/out \
-	broadinstitute/gatk:4.1.7.0 gatk --java-options "-Xmx8G" \
+	broadinstitute/gatk:4.1.9.0 gatk --java-options "-Xmx8G" \
 	AddOrReplaceReadGroups \
 	-I /out/${SAMPLE}_Aligned.sortedByCoord.out.bam \
 	-O /out/${SAMPLE}_rg_added_sorted.bam \

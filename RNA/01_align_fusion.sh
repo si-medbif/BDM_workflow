@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Running STAR alignment with parameters fit for using the results as input for STAR-fusion
 # Parameter settings are based on recommendations for running STAR-fusion after alignment
 # see: https://github.com/STAR-Fusion/STAR-Fusion/wiki
 
