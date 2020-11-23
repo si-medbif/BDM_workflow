@@ -10,6 +10,8 @@ FASTQFOLDER=$1
 BAMFOLDER=$2
 dir_Hg38=/gnome/genome_database/gatk_bundle/hg38bundle
 SAMPLE=$3
+LEFTFQ=$4
+RIGHTFQ=$5
 
 docker run --rm -v ${FASTQFOLDER}:/fastq \
 	-v ${dir_Hg38}:/reference \
@@ -18,6 +20,6 @@ docker run --rm -v ${FASTQFOLDER}:/fastq \
 	-t 16 \
 	-R "@RG\tID:${SAMPLE}\tSM:${SAMPLE}\tPL:Illumina\tLB:WGS" \
 	/reference/Homo_sapiens_assembly38.fasta.gz \
-	/fastq/${SAMPLE}_R1.fastq.gz \
-	/fastq/${SAMPLE}_R2.fastq.gz \
+	/fastq/${LEFTFQ} \
+	/fastq/${RIGHTFQ} \
 	| samtools sort -o ${BAMFOLDER}/${SAMPLE}_sorted.bam
