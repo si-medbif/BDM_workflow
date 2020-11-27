@@ -20,8 +20,7 @@ ap = argparse.ArgumentParser()
 group = ap.add_mutually_exclusive_group()
 group.add_argument("-f", "--folder", help="path to the folder with count-files")
 group.add_argument("-s", "--samples", help="file with list of the count-files")
-group.add_argument("-m", "--multi", help="Multi-sample file")
-ap.add_argument("-n", "--names", help="Map for gene translation [alias1 alias2 ... new]")
+ap.add_argument("-n", "--names", help="Map for gene translation [alias1 alias2 ... new]", default="/gnome/genome_database/ensembl/ensembl_gene-transcript-name.tsv")
 ap.add_argument("-o", "--outfile", help="Output file prefix", default="project")
 args = vars(ap.parse_args())
 
@@ -45,47 +44,60 @@ if args["names"] is not None:
     with open(args["names"], 'r') as fin:
         for line in fin:
             l = line.strip().split()
-            for el in l[0:-1]:
+            for el in l:
                 db[el] = l[-1]
+counts = {}
+gene_db = {}
+for findex, infile in enumerate(files):
+    print(infile)
+    with open(infile, 'r') as fin:
+        header = next(fin)
+        if header.startswith('#'):
+            header = next(fin)
+        samples = header.split()[6:]
+        for sample in samples:
+            counts[sample] = {}
+            print('\t',sample)
+        for line in fin:
+            l = line.strip().split()
+            Geneid, Chr, Start, End, Strand, Length, *count = l
+            geneid = db.get(Geneid, 'NAN')
+            if geneid == 'NAN':
+                continue
+            if geneid not in gene_db:
+                gene_db[geneid] = int(Length)
+            for sample, s in zip(samples, count):
+                counts[sample][geneid] = int(s)
+print('Finished reading counts')
 
-if args['multi'] is not None:
-    indf = pd.read_csv(args['multi'], header=0, sep='\t', comment='#')
-    rawdf = indf.drop(['Chr','Start','End','Strand'], axis=1)
-    num_samples = len(rawdf.columns) - 2
-else:
-    num_samples = len(files)
-    for findex, infile in enumerate(files):
-        infile.strip().rsplit('_',1)[0] + 'counts.tsv'
-        sample = infile.split('/')[-1].rsplit('_',1)[0]
-        indf = pd.read_csv(infile, header=0, sep='\t', comment='#')
-        if findex == 0:
-            rawdf = indf.iloc[:,[0, 5, 6]]
-            columns = ['Geneid', 'Length', sample]
-            continue
-        df1 = indf.iloc[:,6]
-        columns.append(sample)
-        rawdf = pd.concat([rawdf, df1], axis=1)
-        rawdf.columns = columns
-
-outfile1 = '{}_{}-samples_tpm.tsv'.format(args["outfile"], num_samples)
-outfile2 = '{}_{}-samples_raw.tsv'.format(args["outfile"], num_samples)
-if len(db) > 0:
-    rawdf['Geneid'] = rawdf['Geneid'].map(db)
-
+num_samples = len(counts)
+outfile1 = '{}.tpm.tsv'.format(args["outfile"])
+outfile2 = '{}.raw.tsv'.format(args["outfile"])
 # Write raw count data for all samples to file
-outdf = rawdf.drop('Length', axis=1)
-outdf.to_csv(outfile2, sep='\t', index=False, float_format='%.3f')
+samples = counts.keys()
+with open(outfile2, 'w') as fout:
+    fout.write('geneid\tlength\t{}\n'.format('\t'.join(samples)))
+    for gene in gene_db:
+        fout.write('{}\t{}'.format(gene, gene_db[gene]))
+        for sample in samples:
+            try:
+                fout.write('\t{}'.format(counts[sample][gene]))
+            except KeyError:
+                fout.write('\tNA')
+        fout.write('\n')
+print('Finished writing raw counts')
 
 # Calculate TPM and write data for all samples to file
+rawdf = pd.read_csv(outfile2, header=0, sep='\t', comment='#')
 columns = rawdf.columns
 tpmdf = rawdf.iloc[:,[0, 1]]
-for col_ind in range(2, num_samples+2):
+for col_ind in range(2, len(columns)):
     df1 = 1000 * rawdf.iloc[:,col_ind] / rawdf.iloc[:,1]
-    df1 = 1000000 * df1 / sum(df1)
+    df1 = 1000000 * df1 / df1.sum()
     tpmdf = pd.concat([tpmdf, df1], axis=1)
 
 tpmdf.columns = columns
 
-outdf = tpmdf.drop('Length', axis=1)
+outdf = tpmdf.drop('length', axis=1)
 outdf.to_csv(outfile1, sep='\t', index=False, na_rep = 'NaN', float_format='%.3f')
 

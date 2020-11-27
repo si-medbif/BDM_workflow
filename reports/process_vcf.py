@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 
-# Compares: deletions
+# Input is a file with two columns: sample-name VCF-file
+# Output:
+#   TMB
 
 import sys
 import gzip
@@ -10,18 +12,22 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-sample_files_list = sys.argv[1]
+project = sys.argv[1]
+sample_files_list = sys.argv[2]
 chroms = ['chr'+str(c) for c in range(1,23)]+['chrX','chrY']
 infiles=[]
+samplelist = []
 
 syn = ['synonymous_variant']
 nonsyn = ['missense_variant', 'inframe_insertion', 'inframe_deletion']
 high = ['transcript_ablation','splice_acceptor_variant','splice_donor_variant','stop_gained','frameshift_variant','stop_lost','start_lost','transcript_amplification']
 
+
 with open(sample_files_list, 'r') as fin:
     for line in fin:
         l = line.strip().split()
-        infiles.append([l[1],l[0]])
+        infiles.append([l[0],l[1]])
+        samplelist.append(l[0])
 
 def info_process(s):
     db = {}
@@ -43,10 +49,14 @@ def geno_process(k,v):
     return db
 
 mutations = []
-db = {}
-genes = {}
+sampledb = {} # Counts of mutation category (syn, non-syn, high) for each sample 
+sampledb_file = '{}-samples.tsv'.format(project)
+tmb = {} # Counts of mutation category (syn, non-syn, high) for each gene
+tmb_file = '{}-tmb.tsv'.format(project)
+pos = {} # Counts of specific mutation for each gene
+pos_file = '{}-position.tsv'.format(project)
 for sample, infile in infiles:
-    db[sample] = {}
+    sampledb[sample] = {}
     if infile.endswith('gz'):
         fileopen = gzip.open
     else:
@@ -65,58 +75,64 @@ for sample, infile in infiles:
                 continue
             info = info_process(INFO)
             annotations = info['CSQ'].split(',')
-            for annotation in annotations:
-                an = annotation.split('|')
-                # Consequence
-                mut = an[1]
-                if mut in syn:
-                    mut = 'synonymous'
-                elif mut in nonsyn:
-                    mut = 'non-synonymous'
-                elif mut in high:
-                    mut = 'high'
-                else:
-                    continue
-                if mut not in mutations:
-                    mutations.append(mut)
-                # Gene
-                gene = an[3]
-                if gene not in genes:
-                    genes[gene] = [0,0,0] # non-syn, syn, high
-                break # Assuming the first annotation has the highest impact
-            # Consequence
-            db[sample][mut] = db[sample].get(mut, 0) + 1
-            # Gene
+            an = annotations[0].split('|')
+            # Collect mutation consequences for each sample
+            mut = an[1]
+            if mut in syn:
+                mut = 'synonymous'
+            elif mut in nonsyn:
+                mut = 'non-synonymous'
+            elif mut in high:
+                mut = 'high'
+            else:
+                continue
+            if mut not in mutations:
+                mutations.append(mut)
+            sampledb[sample][mut] = sampledb[sample].get(mut, 0) + 1
+            # Collect mutation consequences for each gene
+            gene = an[3]
+            if gene not in tmb:
+                tmb[gene] = [0,0,0] # non-syn, syn, high
             if mut == 'synonymous':
-                genes[gene][0] += 1
+                tmb[gene][0] += 1
             elif mut == 'non-synonymous':
-                genes[gene][1] += 1
+                tmb[gene][1] += 1
             elif mut == 'high':
-                genes[gene][2] += 1
-# Write TMB report
+                tmb[gene][2] += 1
+            # Count samples per (MODERATE/HIGH) mutation position within each gene
+            if mut not in ['non-synonymous','high']:
+                continue
+            if gene not in pos:
+                pos[gene] = {}
+            if int(POS) not in pos[gene]:
+                pos[gene][int(POS)] = []
+            pos[gene][int(POS)].append(sample)
+
+# Write sample report
 ns = []
 s = []
 t = []
 h = []
 samples = []
-sys.stdout.write('sample\t{}\ttotal\n'.format('\t'.join(mutations)))
-for sample, infile in infiles:
-    samples.append(sample)
-    sys.stdout.write('{}'.format(sample))
-    total = 0
-    for mut in ['synonymous','non-synonymous','high']:
-        an = db[sample].get(mut, 0)
-        if mut == 'synonymous':
-            s.append(an)
-        elif mut == 'non-synonymous':
-            ns.append(an)
-        elif mut == 'high':
-            h.append(an)
-        total += an
-        sys.stdout.write('\t{}'.format(an))
-    t.append(total)
-    sys.stdout.write('\t{}\n'.format(total))
-# Create TMB plot
+with open(sampledb_file,'w') as fout:
+    fout.write('sample\t{}\ttotal\n'.format('\t'.join(mutations)))
+    for sample, infile in infiles:
+        samples.append(sample)
+        fout.write('{}'.format(sample))
+        total = 0
+        for mut in ['synonymous','non-synonymous','high']:
+            an = sampledb[sample].get(mut, 0)
+            if mut == 'synonymous':
+                s.append(an)
+            elif mut == 'non-synonymous':
+                ns.append(an)
+            elif mut == 'high':
+                h.append(an)
+            total += an
+            fout.write('\t{}'.format(an))
+        t.append(total)
+        fout.write('\t{}\n'.format(total))
+# Create sample plot
 fig, ax = plt.subplots(nrows=3, ncols=1, figsize=(14,14), sharex=True)
 N = len(samples)
 first = s
@@ -132,10 +148,18 @@ p3 = ax[0].bar(ind, third, width, color = 'green')
 ax[0].set_title('Total')
 t1 = plt.xticks(ind,samples, rotation=90)
 #l = plt.legend((p1[0], p2[0], p3[0]), ('Synonymous', 'Non-Synonymous', 'Total'))
-fig.savefig('tmb.png')
+fig.savefig(sampledb_file+'.png')
 
 # Write gene occurence report
-for gene in genes:
-    s, ns, h = genes[gene]
-    if s + ns + h > 1:
-        sys.stdout.write('{}\t{}\t{}\t{}\n'.format(gene, s, ns, h))
+with open(tmb_file,'w') as fout, open(pos_file,'w') as fout2:
+    fout.write('gene\tsynonymous\tnon-synonymous\thigh\n')
+    for gene in tmb:
+        s, ns, h = tmb[gene]
+        if s + ns + h > 1:
+            fout.write('{}\t{}\t{}\t{}\n'.format(gene, s, ns, h))
+        if gene in pos:
+            for p, s_list in pos[gene].items():
+                fout2.write('{}\t{}'.format(gene, p))
+                for s in s_list:
+                    fout2.write('\t{}'.format(s))
+                fout2.write('\n')
