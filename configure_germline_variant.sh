@@ -12,3 +12,5 @@ cp DNA/genotype_gvcfs.sh ${PROJECT}/05_genotype_gvcfs.sh
 cp DNA/combine_vcfs.sh ${PROJECT}/06_combine_vcfs.sh
 cp DNA/variant_recalibrator.sh ${PROJECT}/07_variant_recalibrator.sh
 cp DNA/annotate_vep.sh ${PROJECT}/08_annotate_vep.sh
+cp reports/samtools_stats.sh ${PROJECT}/09_samtools_stats.sh
+cp reports/create_dna-bam_report.py ${PROJECT}/10_create_dna-bam_report.py
