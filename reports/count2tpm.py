@@ -33,8 +33,6 @@ elif args['folder'] is not None:
     files = glob.glob(args["folder"]+'/*readcounts.featurecounts.txt')
     out_folder = args["folder"]
     project_name = 'project'
-elif args['multi'] is not None:
-    pass
 else:
     sys.stderr.write('ERROR: missing or incorrect input.\n')
     sys.exit(1)
@@ -49,7 +47,6 @@ if args["names"] is not None:
 counts = {}
 gene_db = {}
 for findex, infile in enumerate(files):
-    print(infile)
     with open(infile, 'r') as fin:
         header = next(fin)
         if header.startswith('#'):
@@ -57,7 +54,6 @@ for findex, infile in enumerate(files):
         samples = header.split()[6:]
         for sample in samples:
             counts[sample] = {}
-            print('\t',sample)
         for line in fin:
             l = line.strip().split()
             Geneid, Chr, Start, End, Strand, Length, *count = l

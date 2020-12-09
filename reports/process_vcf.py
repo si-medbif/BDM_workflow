@@ -155,7 +155,7 @@ with open(tmb_file,'w') as fout, open(pos_file,'w') as fout2:
     fout.write('gene\tsynonymous\tnon-synonymous\thigh\n')
     for gene in tmb:
         s, ns, h = tmb[gene]
-        if s + ns + h > 1:
+        if s + ns + h >= 1:
             fout.write('{}\t{}\t{}\t{}\n'.format(gene, s, ns, h))
         if gene in pos:
             for p, s_list in pos[gene].items():
