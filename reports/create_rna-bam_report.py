@@ -25,7 +25,7 @@ mapped_to_too_many_loci = []
 ratio = [] # (uniquely_mapped_reads + mapped_to_multiple_loci) / input_reads
     
 for sample in samples:
-    infile = '{}/{}/{}_Log.final.out'.format(bamfolder, sample, sample)
+    infile = '{}/{}_Log.final.out'.format(bamfolder, sample)
     with open(infile, 'r') as fin:
         for line in fin:
             try:

@@ -69,6 +69,7 @@ print('Finished reading counts')
 num_samples = len(counts)
 outfile1 = '{}.tpm.tsv'.format(args["outfile"])
 outfile2 = '{}.raw.tsv'.format(args["outfile"])
+outfile3 = '{}.fpkm.tsv'.format(args["outfile"])
 # Write raw count data for all samples to file
 samples = counts.keys()
 with open(outfile2, 'w') as fout:
@@ -96,4 +97,19 @@ tpmdf.columns = columns
 
 outdf = tpmdf.drop('length', axis=1)
 outdf.to_csv(outfile1, sep='\t', index=False, na_rep = 'NaN', float_format='%.3f')
+
+# Calculate FPKM and write data for all samples to file
+rawdf = pd.read_csv(outfile2, header=0, sep='\t', comment='#')
+columns = rawdf.columns
+tpmdf = rawdf.iloc[:,[0, 1]]
+for col_ind in range(2, len(columns)):
+    df1 = rawdf.iloc[:,col_ind]
+    df1 = 1000000 * df1 / df1.sum()
+    df1 = 1000 * df1 / rawdf.iloc[:,1]
+    tpmdf = pd.concat([tpmdf, df1], axis=1)
+
+tpmdf.columns = columns
+
+outdf = tpmdf.drop('length', axis=1)
+outdf.to_csv(outfile3, sep='\t', index=False, na_rep = 'NaN', float_format='%.3f')
 
