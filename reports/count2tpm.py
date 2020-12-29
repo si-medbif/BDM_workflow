@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 """
-    Collects output from single sample featureCounts analysis.
+    Collects output from single sample featureCounts analysis, combines output from all samples into one report per output type (TPM/FPKM/Raw).
     Input:  Either: 
               Folder name where featureCounts output is stored as <SAMPLE>_readcounts.featurecounts.txt
             Or:
               File with list of featureCounts output files. 
-    Output: One file with TPM values for each sample
-            One file with raw counts for each sample
+    Output: One file with TPM values
+            One file with FPKM values
+            One file with raw counts
 """
 
 import sys
