@@ -1,7 +1,7 @@
 #! /bin/bash
 
-DIR_FASTQ=$1
-SAMPLE=$2
+DIR_FASTQ=$2
+SAMPLE=$1
 
 docker run --rm -v ${DIR_FASTQ}:/fastq \
     gcatio/fastqc opt/FastQC/fastqc \
