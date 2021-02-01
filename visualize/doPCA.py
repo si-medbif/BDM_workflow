@@ -17,23 +17,52 @@ from sklearn.decomposition import PCA as sklearnPCA
 from adjustText import adjust_text
 from scipy import stats
 
+def transform(args):
+    """ Transposes and cleans input matrix 
+    """
+    outfile = '{}.t.tsv'.format(args.transform.rsplit('.',1)[0])
+    n = 2
+    with open(args.transform, 'r') as fin:
+        db = []
+        for line in fin:
+            l = line.strip().split()
+            db.append(l[n:])
+    names = []
+    with open(outfile, "w") as fout:
+        for line in zip(*db):
+            fout.write("{}\n".format("\t".join(line)))
+            
+def create_groups(args):
+    if args.transform:
+        infile = '{}.t.tsv'.format(args.transform.rsplit('.',1)[0])
+    else:
+        infile = args.infile
+    outfile = '{}.groups.tsv'.format(infile.rsplit('.', 1)[0])
+    with open(infile, 'r') as fin, open(outfile, 'w') as fout:
+        for line in fin:
+            l = line.strip().split()
+            fout.write('{}\t{}\n'.format(l[0], 'A'))
 
 def dopca(args):
-    if args.header:
-        df = pd.read_table(args.infile, header=0)
+    if args.transform is not None:
+        infile = '{}.t.tsv'.format(args.transform.rsplit('.',1)[0])
     else:
-        df = pd.read_table(args.infile, header=None)
+        infile = args.infile
+    if args.groups is not None:
+        groupfile = args.groups
+    else:
+        groupfile = '{}.groups.tsv'.format(infile.rsplit('.', 1)[0])
+    if args.header:
+        df = pd.read_table(infile, header=0)
+    else:
+        df = pd.read_table(infile, header=None)
     extra = ""
     t = df.shape
     X = df.iloc[:, 1:].values
-    if args.groups is not None:
-        df1 = pd.read_table(args.groups, header=None)
-        names = df1.iloc[:,0]
-        y1 = df1.iloc[:,1]
-        group1 = df1.iloc[:,1].unique()
-    else:
-        y1 = np.array(["NA"] * (t[0]))
-        group1 = ["NA"]
+    df1 = pd.read_table(groupfile, header=None)
+    names = df1.iloc[:,0]
+    y1 = df1.iloc[:,1]
+    group1 = df1.iloc[:,1].unique()
     ## Scale the dataset to unit scale (mean=0, variance=1).
     if args.standardize:
         from sklearn.preprocessing import StandardScaler
@@ -91,8 +120,8 @@ def dopca(args):
         plt.tight_layout()
         #adjust_text(texts, arrowprops=dict(arrowstyle="->", color="red"))
         # plt.show()
-        fig.savefig("{}.{}png".format(args.infile, extra))
-    if not args.varlabels:
+        fig.savefig("{}.{}png".format(infile, extra))
+    if not args.loadings:
         return
     # PCA loadings
     x = sklearn_pca.components_[0, :]
@@ -111,6 +140,12 @@ def dopca(args):
 
 def main(args):
     """ Main entry point of the app """
+    # If input file is the output from count2tpm, transform it first
+    if args.transform is not None:
+        transform(args)
+    # If no group file is specified, create one
+    if args.groups is None:
+        create_groups(args)
     dopca(args)
     if args.log:
         with open("README.txt", "a") as fout:
@@ -121,13 +156,24 @@ if __name__ == "__main__":
     """ This is executed when run from the command line """
     parser = argparse.ArgumentParser()
 
-    # Required positional argument
-    parser.add_argument("infile", help="Input file")
+    # Optional arguments with input
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+            "-i", "--infile",
+            help="Pre-processed input file")
+    group.add_argument(
+            "-t", "--transform",
+            help="Count2tpm output file")
+    parser.add_argument(
+            "-g", "--groups",
+            help="Columns: sample name, group (no header)"
+            )
+
 
     # Optional argument flag which defaults to False
     parser.add_argument(
             "-l","--log",
-            action="store_true",
+            action="store_false",
             default=True,
             help="Save command to 'README.txt'"
             )
@@ -152,13 +198,6 @@ if __name__ == "__main__":
             "-s", "--standardize",
             action="store_true",
             help="Standardize the values"
-            )
-
-    # Optional argument which requires a parameter
-    parser.add_argument(
-            "-g", "--groups",
-            action="store",
-            help="Add color based on groups in 2nd column"
             )
 
     # Optional verbosity counter (eg. -v, -vv, -vvv, etc.)
