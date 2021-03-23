@@ -68,7 +68,7 @@ def dopca(args):
         from sklearn.preprocessing import StandardScaler
         X_std = StandardScaler().fit_transform(X)
         X = X_std
-        extra = "std."
+        extra = ".std"
     comp = min(9, min(t)-1)
     sklearn_pca = sklearnPCA(n_components=comp)
     Y_sklearn = sklearn_pca.fit_transform(X)
@@ -92,9 +92,7 @@ def dopca(args):
             )
         if args.labels:
             for ind, name in enumerate(names):
-                #print(Y_sklearn[ind, 0], Y_sklearn[ind, 1], name)
                 plt.text(Y_sklearn[ind, 0], Y_sklearn[ind, 1], name)
-                #texts.append(plt.text(Y_sklearn[ind, 0], Y_sklearn[ind, 1], name))
         xp1, xp2 = sklearn_pca.explained_variance_[0:2]
         plt.xlabel(
             "PC 1 [{:.1f}%]".format(100 * xp1 / sum(sklearn_pca.explained_variance_))
@@ -121,21 +119,45 @@ def dopca(args):
         #adjust_text(texts, arrowprops=dict(arrowstyle="->", color="red"))
         # plt.show()
         fig.savefig("{}.{}png".format(infile, extra))
-    if not args.loadings:
+    if args.loadings is None:
         return
+    df2 = pd.read_table(args.loadings, header=0)
     # PCA loadings
     x = sklearn_pca.components_[0, :]
     y = sklearn_pca.components_[1, :]
+    df2["pc1"] = x
+    df2["pc2"] = y
     fig2, ax2 = plt.subplots(1, 1, figsize=(10, 10))
     plt.scatter(x, y)
+    df2_sorted = df2.sort_values('pc1', ascending=False)
+    for index in range(0,5):
+        bottom = len(df2.index)-(index+1)
+        xi = df2_sorted.iloc[index, 1]
+        yi = df2_sorted.iloc[index, 2]
+        tekst = df2_sorted.iloc[index, 0]
+        plt.text(xi, yi,tekst,fontsize=12)
+        xi = df2_sorted.iloc[bottom, 1]
+        yi = df2_sorted.iloc[bottom, 2]
+        tekst = df2_sorted.iloc[bottom, 0]
+        plt.text(xi, yi,tekst,fontsize=12)
+    df2_sorted = df2.sort_values('pc2', ascending=False)
+    for index in range(0,5):
+        bottom = len(df2.index)-(index+1)
+        xi = df2_sorted.iloc[index, 1]
+        yi = df2_sorted.iloc[index, 2]
+        tekst = df2_sorted.iloc[index, 0]
+        plt.text(xi, yi,tekst,fontsize=12)
+        xi = df2_sorted.iloc[bottom, 1]
+        yi = df2_sorted.iloc[bottom, 2]
+        tekst = df2_sorted.iloc[bottom, 0]
+        plt.text(xi, yi,tekst,fontsize=12)
+
     plt.xlabel("PC1")
     plt.ylabel("PC2")
-    fig2.savefig("{}.loadings.{}png".format(args.infile,extra))
-    #df2["pc1"] = x
-    #df2["pc2"] = y
-    #df2.to_csv(
-    #    "{}_loadings.tsv".format(args.infile), header=True, index=False, sep="\t"
-    #)
+    fig2.savefig("{}{}.loadings.png".format(args.infile,extra))
+    df2.to_csv(
+        "{}{}.loadings.tsv".format(args.infile, extra), header=True, index=False, sep="\t"
+    )
 
 
 def main(args):
@@ -168,6 +190,10 @@ if __name__ == "__main__":
             "-g", "--groups",
             help="Columns: sample name, group (no header)"
             )
+    parser.add_argument(
+            "-a","--loadings",
+            help="List of variables"
+            )
 
 
     # Optional argument flag which defaults to False
@@ -188,11 +214,6 @@ if __name__ == "__main__":
             action="store_true",
             default=False,
             help="Add sample names to the plot"
-            )
-    parser.add_argument(
-            "-a", "--loadings",
-            action="store_true",
-            help="Plot loadings"
             )
     parser.add_argument(
             "-s", "--standardize",

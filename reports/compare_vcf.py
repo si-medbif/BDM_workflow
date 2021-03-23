@@ -19,7 +19,7 @@ name2 = file2.split('/')[-1]
 db1 = {} # SNP
 db2 = {} # INDEL
 
-# results = 0:PASS-PASS, 1:PASS-FAIL, 2:PASS-MISSING, 3:FAIL-PASS, 4:FAIL-FAIL, 5:FAIL-MISSING, 6:MISSING-PASS, 7:MISSING-FAIL, 8:DISCORDANT 
+results_name = ["0:PASS-PASS", "1:PASS-FAIL", "2:PASS-MISSING", "3:FAIL-PASS", "4:FAIL-FAIL", "5:FAIL-MISSING", "6:MISSING-PASS", "7:MISSING-FAIL", "8:DISCORDANT"] 
 results1 = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 results2 = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
@@ -81,5 +81,6 @@ for key, value in db2.items():
         pass
 
 
+sys.stdout.write('First\tSecond\tType\t{}\n'.format('\t'.join(results_name)))
 sys.stdout.write('{}\t{}\tSNP\t{}\n'.format(name1, name2, '\t'.join([str(i) for i in results1])))
 sys.stdout.write('{}\t{}\tINDEL\t{}\n'.format(name1, name2, '\t'.join([str(i) for i in results2])))
