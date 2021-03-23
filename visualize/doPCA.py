@@ -31,10 +31,27 @@ def transform(args):
     with open(outfile, "w") as fout:
         for line in zip(*db):
             fout.write("{}\n".format("\t".join(line)))
+
+def transpose(args):
+    """ Transposes input matrix 
+    """
+    outfile = '{}.t.tsv'.format(args.matrix.rsplit('.',1)[0])
+    n = 1
+    with open(args.matrix, 'r') as fin:
+        db = []
+        for line in fin:
+            l = line.strip().split()
+            db.append(l[n:])
+    names = []
+    with open(outfile, "w") as fout:
+        for line in zip(*db):
+            fout.write("{}\n".format("\t".join(line)))
             
 def create_groups(args):
     if args.transform:
         infile = '{}.t.tsv'.format(args.transform.rsplit('.',1)[0])
+    elif args.matrix is not None:
+        infile = '{}.t.tsv'.format(args.matrix.rsplit('.',1)[0])
     else:
         infile = args.infile
     outfile = '{}.groups.tsv'.format(infile.rsplit('.', 1)[0])
@@ -46,6 +63,8 @@ def create_groups(args):
 def dopca(args):
     if args.transform is not None:
         infile = '{}.t.tsv'.format(args.transform.rsplit('.',1)[0])
+    elif args.matrix is not None:
+        infile = '{}.t.tsv'.format(args.matrix.rsplit('.',1)[0])
     else:
         infile = args.infile
     if args.groups is not None:
@@ -165,6 +184,8 @@ def main(args):
     # If input file is the output from count2tpm, transform it first
     if args.transform is not None:
         transform(args)
+    elif args.matrix is not None:
+        transpose(args)
     # If no group file is specified, create one
     if args.groups is None:
         create_groups(args)
@@ -182,10 +203,16 @@ if __name__ == "__main__":
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
             "-i", "--infile",
-            help="Pre-processed input file")
+            help="Pre-processed input file"
+            )
     group.add_argument(
             "-t", "--transform",
-            help="Count2tpm output file")
+            help="Count2tpm output file"
+            )
+    group.add_argument(
+            "-m", "--matrix",
+            help="Transpose matrix"
+            )
     parser.add_argument(
             "-g", "--groups",
             help="Columns: sample name, group (no header)"
