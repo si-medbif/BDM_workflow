@@ -8,7 +8,7 @@ set -ueo pipefail
 GATKhg38=/gnome/genome_database/gatk_bundle/hg38bundle
 COSMIC=/gnome/genome_database/cosmic
 DBNSFP=/gnome/genome_database/dbNSFP/dbNSFP4.0a
-ENSEMBL=/gnome/genome_database/ensembl/vep_data
+ENSEMBL=/gnome/genome_database/vep_data
 INPUT=$1
 OUTPUT=$2
 SAMPLE=$3
