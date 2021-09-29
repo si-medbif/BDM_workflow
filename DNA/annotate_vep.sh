@@ -24,6 +24,7 @@ docker run --rm --name vep_${SAMPLE} \
 	./vep --cache --offline --format vcf --vcf --force_overwrite \
 	--dir_cache /opt/vep/.vep/ \
 	--dir_plugins /opt/vep/.vep/Plugins/ \
+	--fasta /hg38/Homo_sapiens_assembly38.vep.fasta.gz \
 	--input_file /output/${VCFFILE}.vcf.gz \
 	--output_file /output/${VCFFILE}_vep.vcf \
 	--stats_file /output/${VCFFILE}.summary.html \
