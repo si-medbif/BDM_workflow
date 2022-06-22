@@ -12,9 +12,9 @@ docker run --rm -v ${DIR_OUTPUT}:/Output \
 	broadinstitute/picard:latest \
 	MarkDuplicates \
 	CREATE_INDEX=true \
-	I=/Output/${SAMPLE}/BAM/${SAMPLE}_sorted.bam \
-	O=/Output/${SAMPLE}/BAM/${SAMPLE}_dedupped.bam \
-	M=/Output/${SAMPLE}/BAM/${SAMPLE}_dedup_output.metrics
+	I=/Output/${SAMPLE}.sorted.bam \
+	O=/Output/${SAMPLE}.dedupped.bam \
+	M=/Output/${SAMPLE}.dedup_output.metrics
 
 
 

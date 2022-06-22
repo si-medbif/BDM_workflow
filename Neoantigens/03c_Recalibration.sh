@@ -11,16 +11,6 @@ SAMPLE=$2
 
 
 docker run --rm -v ${DIR_OUTPUT}:/Output \
-	-v ${DIR_HG38}:/Hg38_dir \
-	broadinstitute/gatk:4.1.4.1 gatk --java-options "-Xmx8G" \
-	BaseRecalibrator \
-	-R /Hg38_dir/Homo_sapiens_assembly38.fasta \
-	--known-sites /Hg38_dir/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz \
-	--known-sites /Hg38_dir/dbsnp_146.hg38.vcf.gz \
-	-I /Output/${SAMPLE}/BAM/${SAMPLE}.dedupped.bam \
-	-O /Output/${SAMPLE}/BAM/${SAMPLE}.perform_bqsr.table
-
-docker run --rm -v ${DIR_OUTPUT}:/Output \
         -v ${DIR_HG38}:/Hg38_dir \
         broadinstitute/gatk:4.1.4.1 gatk --java-options "-Xmx8G" \
 	ApplyBQSR \

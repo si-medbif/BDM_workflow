@@ -1,11 +1,13 @@
 #! /bin/bash
 
 DIR_FASTQ=$1
-SAMPLE=$2
+FQ_LEFT=$2
+FQ_RIGHT=$3
+
 
 docker run --rm -v ${DIR_FASTQ}:/fastq \
     gcatio/fastqc opt/FastQC/fastqc \
     -o /fastq \
     -t 2 \
-    /fastq/${SAMPLE}_R1.fastq.gz \
-    /fastq/${SAMPLE}_R2.fastq.gz
+    /fastq/${FQ_LEFT} \
+    /fastq/${FQ_RIGHT}
