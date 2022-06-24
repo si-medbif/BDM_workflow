@@ -3,6 +3,7 @@
 # Usage: 04_SomaticVariantCall.sh <output-folder> <GATK-resource-folder> <Tumor_sample> <Normal_sample>
 
 # WES: 6.25m, 6.12m, 0.23m
+# WGS: 7.96m, 7.21m, 0.31m
 
 # Input: BAM file, base quality scores are recalibrated.
 # Output: VCF file, somatic variants, filtered.

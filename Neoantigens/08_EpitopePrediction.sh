@@ -6,21 +6,22 @@
 # There is no limit to the number of alleles that can be provided,
 # although runtime will increase.
 
-dir_Output=$1
-sample=$2
-HLA=$3
+# Newest version: griffithlab/pvactools:3.0.1
 
-mkdir -p ${dir_Output}/${sample}/pvac
+dir_VCF=$1
+dir_PVAC=$2
+sample=$3
+HLA=$4
 
-docker run --rm -v ${dir_Output}:/Output \
-       -v ${dir_Output}/${sample}/pvac:/output_dir \
+docker run --rm -v ${dir_VCF}:/vcf \
+       -v ${dir_PVAC}:/pvac \
        griffithlab/pvactools:1.5.4 \
 	pvacseq run \
-       /Output/${sample}/VCF/${sample}_m2_vep_filtered.vcf \
-       -t 4 \
+       /vcf/${sample}.vep.filtered.gx.cov.vcf \
+       -t 16 \
        --iedb-install-directory /opt/iedb \
 	${sample} \
 	${HLA} \
 	MHCflurry MHCnuggetsI MHCnuggetsII NNalign NetMHC PickPocket SMM SMMPMBEC SMMalign \
-	/output_dir/ \
+	/pvac/ \
        -e 8,9,10,11,12

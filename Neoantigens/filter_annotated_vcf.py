@@ -5,7 +5,7 @@
 import sys
 
 allowed_chroms = ['chr'+str(i) for i in range(1,23)] + ['chrX']
-allowed_filters = ['PASS','germline_risk']
+allowed_filters = ['PASS']
 
 with open(sys.argv[1], 'r') as fin, open(sys.argv[2], 'w') as fout:
     for line in fin:
