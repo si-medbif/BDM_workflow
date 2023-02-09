@@ -52,6 +52,29 @@ docker run \
         /fastq/${SAMPLE}.markdup.sorted.extracted.2.fq.gz
 ```
 
+run_hlahd.sh
+```
+docker_hlahd.sh \
+	${TUMOR} \
+	${FASTQ_FOLDER} \
+	${TUMOR}_R1.fastq.gz \
+	${TUMOR}_R2.fastq.gz \
+	${OUT}
+```
+```
+docker run --rm -v ${DIR_FASTQ}:/fastq \
+	-v ${OUT}:/out \
+	jianhung/hla-hd hlahd.sh \
+	-t 16 \
+	-f /home/hlahd.1.2.1/freq_data \
+	fastq/${FASTQ1} \
+	fastq/${FASTQ2} \
+	/home/hlahd.1.2.1/HLA_gene.split.txt \
+	/home/hlahd.1.2.1/dictionary \
+	 ${SAMPLE} \
+	 /out
+```
+
 ## Align reads
 run_alignment.sh
 ```
