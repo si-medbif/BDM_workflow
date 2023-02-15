@@ -351,19 +351,6 @@ docker run --rm -v ${DIR_REFERENCE}:/Reference \
         --plugin Frameshift --plugin Wildtype --force_overwrite
 ```
 
-## Select variants
-run_selectvariants.sh
-```
-06_SelectVariants.sh ${DIR_VCF} ${IN_VCF} ${OUT_VCF}
-```
-```
-docker run --rm -v ${DIR_VCF}:/vcf \
-        broadinstitute/gatk:4.1.5.0 gatk \
-        --java-options "-Xmx8g" SelectVariants \
-        -V /vcf/${IN_VCF} \
-        -O /vcf/${OUT_VCF} \
-        --exclude-filtered
-```
 ## Add coverage
 run_addcoverage.sh
 ```
@@ -414,6 +401,20 @@ docker run --rm -v ${DIR_VCF}:/vcf \
         -s ${TUMOR} \
         -t indel \
         -o /vcf/${TUMOR}.vep.gx.cov.vcf
+```
+
+## Select variants
+run_selectvariants.sh
+```
+06_SelectVariants.sh ${DIR_VCF} ${IN_VCF} ${OUT_VCF}
+```
+```
+docker run --rm -v ${DIR_VCF}:/vcf \
+        broadinstitute/gatk:4.1.5.0 gatk \
+        --java-options "-Xmx8g" SelectVariants \
+        -V /vcf/${IN_VCF} \
+        -O /vcf/${OUT_VCF} \
+        --exclude-filtered
 ```
 
 ## Predict neoantigens
